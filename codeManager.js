@@ -136,7 +136,7 @@ worker.onmessage = function (e) {
         } else if (e.data.error) {
             output_area.innerHTML = `<span class="error-msg">${e.data.error}</span>`;
         } else {
-            throw "unreachable"
+            throw "unreachable";
         }
     } else if (e.data.mode === 'submit') {
         if (e.data.error) {

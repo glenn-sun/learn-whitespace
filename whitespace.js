@@ -6,10 +6,10 @@ function unbleach (n) {
 // solution
 function whitespace(code, input) {
   if ( ! code ) throw "Invalid input";
-   
+  
+  code = Array.from(code).filter(c => c === " " || c === "\t" || c === "\n").join('');
   var output = [], stack = [], heap = {};
   var i = 0, labels = {}, lastPos = -1, instructions = code.split("");  
-  
   var getNext = function() {
     var next = "";
     while ( next !== " " && next !== "\n" && next != "\t" && i < instructions.length ) {
@@ -30,7 +30,7 @@ function whitespace(code, input) {
     var tmp = input.split("\n");
     input = tmp.slice(1).join("\n");
     if ( tmp[0].length === 0 ) throw "Empty input";
-    return tmp[0];
+    return parseInt(tmp[0]);
   };
   
   var getInputChar = function() {
@@ -51,7 +51,7 @@ function whitespace(code, input) {
     var fullLabel = "\n  " + label;
     var labelPos = code.indexOf(fullLabel, i);
     if ( labelPos < 0 ) labelPos = code.indexOf(fullLabel);
-    if ( labelPos < 0 ) throw "Label not found";
+    if ( labelPos < 0 ) throw "Label not found" + JSON.stringify(fullLabel);
     labels[label] = labelPos + fullLabel.length;
   };
   
@@ -166,6 +166,7 @@ function whitespace(code, input) {
         var a = stack.pop(), b = stack.pop();
         if ( a === undefined || b === undefined ) throw "Empty stack";
         var instr1 = getNext(), instr2 = getNext()
+        console.log(a, b);
         if      ( instr1 === " "  && instr2 === " "  ) stack.push(a+b);
         else if ( instr1 === " "  && instr2 === "\t" ) stack.push(b-a);
         else if ( instr1 === " "  && instr2 === "\n" ) stack.push(a*b);
@@ -243,7 +244,13 @@ self.onmessage = function(e) {
       code: e.data.code,
     });
   } catch (error) {
-    self.postMessage({ output: undefined, error: error });
+    self.postMessage({ 
+      output: undefined, 
+      error: error,
+      mode: e.data.mode,
+      check: e.data.check,
+      code: e.data.code,
+    });
   }
   
 };

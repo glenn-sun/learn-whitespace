@@ -14,12 +14,12 @@ function openTab(e, tab) {
 }
 
 function copyInstr(name) {
-    let instruction = COMMANDS[name].instruction.replace("[]", "");
+    let instruction = COMMANDS[name].instruction.replace("[]", "") + name;
     copy(instruction);
 }
 
 function insertInstr(name) {
-    let instruction = COMMANDS[name].instruction.replace("[]", "");
+    let instruction = COMMANDS[name].instruction.replace("[]", "") + name;
     insert(instruction);
 }
 
@@ -27,18 +27,18 @@ let number = document.getElementById('number')
 let number_instr = document.getElementById('number-instr');
 
 number.addEventListener('input', e => {
-    let code = getNumCode();
+    let code = getNumCode(false);
     if (isNaN(code)) {
         number_instr.innerHTML = "NaN";
     } else {
-        number_instr.innerHTML = getNumCode()
+        number_instr.innerHTML = code
             .replaceAll(" ", "<span class='space'> </span>")
             .replaceAll("\t", "<span class='tab'>\t</span>")
             .replaceAll("\n", "<span class='lf'> </span>\n");
     }
 });
 
-function getNumCode() {
+function getNumCode(append_num) {
     let value = number.value;
     if (value === '') {
         return '';
@@ -55,32 +55,47 @@ function getNumCode() {
                      .replaceAll("1", "\t")
                      .replace("-", "\t")
                      .replace("+", " ");
-    code += "\n"
+    code += "\n";
+    if (append_num) {
+        code += value;
+    }
     return code;
 }
 
 function copyNum() {
-    copy(getNumCode());
+    copy(getNumCode(true));
 }
 
 function insertNum() {
-    insert(getNumCode());
+    insert(getNumCode(true));
 }
 
-function ascii_to_instr(code) {
+function ascii_to_instr(code, append_char) {
     let binary = code.toString(2).padStart(8, '0');
     let instruction = binary.replaceAll("0", " ")
                             .replaceAll("1", "\t");
     instruction += "\n";
+    if (append_char) {
+        if (code == 9) {
+            instruction += "[tab]";
+        } else if (code == 10) {
+            instruction += "[newline]";
+        } else if (code == 32) {
+            instruction += "[space]";
+        } else {
+            instruction += String.fromCharCode(code);
+        }
+    }
+
     return instruction;
 }
 
 function insertAscii(code) {
-    insert(ascii_to_instr(code));
+    insert(ascii_to_instr(code, true));
 }
 
 function copyAscii(code) {
-    copy(ascii_to_instr(code));
+    copy(ascii_to_instr(code, true));
 }
 
 function copy(text) {

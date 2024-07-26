@@ -22,7 +22,7 @@ function load_level() {
         submit_button.classList.remove('hidden');
     }
     level_title.innerHTML = `${current_level}. ${LEVELS[current_level].title}`;
-    instructions_text.innerHTML = LEVELS[current_level].text;
+    instructions_text.innerHTML = LEVELS[current_level].text({player_name: player_name});
     examples.innerHTML = "";
     for (let ex of LEVELS[current_level].examples) {
         examples.innerHTML += `
@@ -113,28 +113,28 @@ function new_row(instruction, text, insertOnclick, copyOnclick) {
 }
 
 ascii_table.innerHTML += new_row(
-    ascii_to_instr(9),
+    ascii_to_instr(9, false),
     "Tab",
     `insertAscii(9)`,
     "copyAscii(9)",
 )
 
 ascii_table.innerHTML += new_row(
-    ascii_to_instr(10),
+    ascii_to_instr(10, false),
     "New line",
     "insertAscii(10)",
     "copyAscii(10)",
 )
 
 ascii_table.innerHTML += new_row(
-    ascii_to_instr(32),
+    ascii_to_instr(32, false),
     "Space",
     "insertAscii(32)",
     "copyAscii(32)",
 )
 
 for (let code = 33; code <= 126; code++) {
-    let instruction = ascii_to_instr(code);
+    let instruction = ascii_to_instr(code, false);
 
     let row = new_row(
         instruction,
