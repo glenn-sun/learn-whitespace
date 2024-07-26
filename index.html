@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCSP'24 Blank Space</title>
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Sans+Mono:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,1,0" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20,400,0,0" />
+</head>
+<body>
+    <header>
+        <div class="header-left">
+            <button id="info" class="header-button" onclick="open_help()">
+                <span class="material-symbols-sharp">
+                    help
+                </span>
+            </button>
+        </div>
+        <div class="header-title"><h1>MCSP'24: Blank Space</h1></div>
+        <div class="header-right">
+            <div class="color-container-outer">
+                <div class="color-container">
+                    <input type="color" value="#f7a6a6" id="tab-color">
+                </div>
+            </div>
+            <div class="color-container-outer">
+                <div class="color-container">
+                    <input type="color" value="#9cd8f1" id="space-color">
+                </div>
+            </div>
+            <div class="color-container-outer">
+                <div class="color-container">
+                    <input type="color" value="#e0f39a" id="lf-color">
+                </div>
+            </div>
+            <select id="tab-size">
+                <option value="1">Tab size: 1</option>
+                <option selected value="2">Tab size: 2</option>
+                <option value="4">Tab size: 4</option>
+            </select>
+            <button id="reset-settings" class="header-button" onclick="open_settings()">
+                <span class="material-symbols-outlined">
+                    reset_wrench
+                </span>
+            </button>
+        </div>
+    </header>
+    <main>
+        <div class="overlay hidden" id="help-overlay">
+            <div class="center-box">
+                <p><b>Information</b></p>
+                <p>This site is produced for the exclusive use of participants of Canada/USA Mathcamp 2024. The contents of this site are not authorized to be publicly shared. All references to copyrighted lyrics and real persons are for educational purposes only. </p>
+                <p><b>Known issues</b></p>
+                <ul>
+                    <li>On Safari, clicking buttons maintains focus on the code area, whereas the code area loses focus in other browers on macOS and all browsers on Windows.</li>
+                    <li>Tabs move the cursor to the next multiple of tab size, in particular they do not always render as the same size.</li>
+                    <li>The output is not displayed until after the entire program finishes running.</li>
+                </ul>
+                <div>
+                    <button id="close-help" onclick="close_help()">
+                        <span class="vertical-middle">Ok</span>
+                        <span class="vertical-middle material-symbols-outlined">check</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="overlay hidden" id="reset-settings-overlay">
+            <div class="center-box">
+                <p id="reset-title">Reset to defaults</p>
+                <div>
+                    <button onclick="reset_tab_color()">Tab color</button>
+                    <button onclick="reset_space_color()">Space color</button>
+                    <button onclick="reset_lf_color()">New line color</button>
+                    <button onclick="reset_tab_size()">Tab size</button>
+                </div>
+                <div>
+                    <button onclick="reset_level()">Campaign progress</button>
+                </div>
+                <div>
+                    <button onclick="reset_code()">Code cache</button>
+                </div>
+                <div>
+                    <button id="close-reset" onclick="close_settings()">
+                        <span class="vertical-middle">Done</span>
+                        <span class="vertical-middle material-symbols-outlined">check</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="overlay hidden" id="next-level-overlay">
+            <div class="center-box">
+                <div>
+                    <span class="material-symbols-outlined" id="done-star">
+                        star
+                    </span>
+                </div>
+                <div id="nice"><p>Nice job!</p></div>
+                <div>
+                    <button id="next" onclick="next_level()">
+                        <span class="vertical-middle">Next</span> 
+                        <span class="vertical-middle material-symbols-outlined">arrow_forward</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="left-pane">
+            <div id="instructions">
+                <h2>
+                    <span class="vertical-middle" id="level-title"></span>
+                </h2>
+                <div id="instructions-text">
+
+                </div>
+                <h3>Examples</h3>
+                <div id="examples">
+
+                </div>
+            </div>
+        </div>
+        <div id="middle-pane">
+            <div id="run-bar">
+                <button id="run" onclick="run()">
+                    <span class="vertical-middle">Run</span> 
+                    <span class="vertical-middle material-symbols-outlined">play_arrow</span>
+                </button>
+                
+                <button id="submit" onclick="submit()">
+                    <span class="vertical-middle">Submit</span> 
+                    <span class="vertical-middle material-symbols-outlined">check</span>
+                </button>
+                <div class="grow"></div>
+                <button id="stop" onclick="interrupt()" class="inactive-button">
+                    <span class="vertical-middle">Stop</span> 
+                    <span class="vertical-middle material-symbols-outlined">stop</span>
+                </button>
+            </div>
+            <div id="code-container">
+                <div id="line-numbers"></div>
+                <div id="code-main">
+                    <div id="code-highlight" class="tab-size"></div>
+                    <div spellcheck="false" 
+                        autocorrect="off" 
+                        autocapitalize="off" 
+                        translate="no" 
+                        contenteditable="true" 
+                        id="code-area"
+                        class="tab-size"></div>
+                </div>
+            </div>
+            <div id="io-container">
+                <div id="input-block">
+                    <div id="input-head">Input</div>
+                    <div id="input-container">
+                        <div id="input-main">
+                            <div spellcheck="false" 
+                                autocorrect="off" 
+                                autocapitalize="off" 
+                                translate="no" 
+                                contenteditable="true" 
+                                id="input-area"
+                                class="tab-size"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="output-block">
+                    <div id="output-head">Output</div>
+                    <div id="output-container" class="tab-size"></div>
+                </div>
+            </div>
+        </div>
+        <div id="right-pane">
+            <div class="tab-nav">
+                <button class="tab-link active-tab" 
+                    onclick="openTab(event, 'commands-tab')">
+                    Commands
+                </button>
+                <button class="tab-link"
+                    id="letters-button"
+                    onclick="openTab(event, 'letters-tab')">
+                    Letters
+                </button>
+                <button class="tab-link"
+                    onclick="openTab(event, 'numbers-tab')">
+                    Numbers
+                </button>
+                <div class="tab-border"></div>
+            </div>
+            <div id="tab-content-container">
+                <div class="tab-content" style="display: block;" id="commands-tab">
+                    <details open>
+                        <summary><h3>Stack manipulation</h3></summary>
+                        <table>
+                            <tbody id="stack-table" class="instr-table">
+    
+                            </tbody>
+                        </table>
+                    </details>
+                    <details open>
+                        <summary><h3>Arithmetic</h3></summary>
+                        <table>
+                            <tbody id="arith-table" class="instr-table">
+    
+                            </tbody>
+                        </table>
+                    </details>
+                    <details open>
+                        <summary><h3>Heap access</h3></summary>
+                        <table>
+                            <tbody id="heap-table" class="instr-table">
+    
+                            </tbody>
+                        </table>
+                    </details>
+                    <details open>
+                        <summary><h3>Flow control</h3></summary>
+                        <table>
+                            <tbody id="flow-table" class="instr-table">
+    
+                            </tbody>
+                        </table>
+                    </details>
+                    <details open>
+                        <summary><h3>Input/output</h3></summary>
+                        <table>
+                            <tbody id="io-table" class="instr-table">
+    
+                            </tbody>
+                        </table>
+                    </details>
+                </div>
+                <div class="tab-content" id="letters-tab">
+                    <table>
+                        <tbody id="ascii-table" class="instr-table">
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-content" id="numbers-tab">
+                    
+                    <input type="number" 
+                        step="1" 
+                        id="number" 
+                        name="number"
+                        placeholder="Enter an integer">
+                    
+                    <table>
+                        <tbody id="number-table" class="instr-table">
+                            <tr>
+                                <td class="instruction tab-size" id="number-instr"></td>
+                                <td><button class="icon-button" onclick="insertNum()">
+                                    <span class="material-symbols-sharp">
+                                        text_select_end
+                                    </span>
+                                </button></td>
+                                <td><button class="icon-button" onclick="copyNum()">
+                                    <span class="material-symbols-sharp">
+                                        content_copy
+                                    </span>
+                                </button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="whitespace.js"></script>
+    <script src="levels.js"></script>
+    <script src="codeManager.js"></script>
+    <script src="rightPaneManager.js"></script>
+    <script src="settingsManager.js"></script>
+    <script src="commands.js"></script>
+    <script src="populate.js"></script>
+</body>
+</html>
