@@ -104,7 +104,7 @@ function submit() {
     if (code.at(-1) === "\n") {
         code = code.slice(0, code.length - 1);
     }
-    workqueue = LEVELS[current_level].tests;
+    workqueue = Array.from(LEVELS[current_level].tests);
     current_job = workqueue.pop();
     worker.postMessage({ 
         code: code, 
@@ -148,7 +148,7 @@ worker.onmessage = function (e) {
             return;
         }
 
-        if (!(current_job.output == e.data.output || current_job.check(e.data.output))) {
+        if (!(current_job.output == e.data.output || (current_job.check && current_job.check(e.data.output)))) {
             run_button.classList.remove('inactive-button');
             submit_button.classList.remove('inactive-button');
         
