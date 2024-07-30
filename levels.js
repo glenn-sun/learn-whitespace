@@ -265,8 +265,8 @@ const LEVELS = [
                 output: "^^>>^^>^",
             },
             {
-                input: "2 2 8 8 8 0",
-                output: "^>^>>^",
+                input: "2 2 10 8 8 0",
+                output: "^>^^>^",
             }
         ],
         tests: [
@@ -279,7 +279,7 @@ const LEVELS = [
                 output: "^^^^>^^",
             },
             {
-                input: "1 1 2 2 0",
+                input: "1 1 20 20 0",
                 output: "^>^>^",
             }
         ]
