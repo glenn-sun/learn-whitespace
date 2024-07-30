@@ -6,6 +6,8 @@ let tab_size = document.getElementById('tab-size');
 let settings_overlay = document.getElementById('reset-settings-overlay');
 let help_overlay = document.getElementById('help-overlay');
 
+let skip_level = document.getElementById('skip-level');
+
 if (localStorage['tab_color']) {
     tab_color.value = localStorage['tab_color'];
     update_tab_color();
@@ -54,10 +56,16 @@ function update_tab_size() {
     stylesheet.insertRule(`.tab-size { tab-size: ${tab_size.value}; }`);
 }
 
+function update_skip_level() {
+    current_level = parseInt(skip_level.value);
+    load_level();
+}
+
 tab_color.addEventListener('input', update_tab_color);
 space_color.addEventListener('input', update_space_color);
 lf_color.addEventListener('input', update_lf_color);
 tab_size.addEventListener('change', update_tab_size);
+skip_level.addEventListener('change', update_skip_level);
 
 function reset_tab_color() {
     tab_color.value = "#f7a6a6";
@@ -81,7 +89,7 @@ function reset_tab_size() {
 
 function reset_level() {
     current_level = 1;
-    player_name = '';
+    player_name = 'Travis';
     load_level();
 }
 
@@ -94,6 +102,7 @@ function reset_code() {
 
 function open_settings() {
     settings_overlay.classList.remove('hidden');
+    skip_level.value = current_level;
 }
 
 function close_settings() {

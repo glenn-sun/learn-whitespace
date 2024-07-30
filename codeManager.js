@@ -12,7 +12,7 @@ setInterval(function() {
     localStorage['input'] = input_area.innerHTML;    
 }, 500);
 
-let player_name = localStorage['player_name'] || '';
+let player_name = localStorage['player_name'] || 'Travis';
 setInterval(function() {
     localStorage['player_name'] = player_name;
 }, 500);
@@ -74,6 +74,17 @@ function processText() {
 code_area.addEventListener('input', processText);
 
 processText();
+
+function fixNewline() {
+    if (input_area.innerHTML.at(-1) != '\n') {
+        input_area.innerHTML += '\n';
+        cursorToEnd(input_area);
+    }
+}
+
+input_area.addEventListener('input', fixNewline);
+
+fixNewline();
 
 let run_button = document.getElementById('run');
 let stop_button = document.getElementById('stop');

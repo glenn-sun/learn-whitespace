@@ -5,7 +5,7 @@ function unbleach (n) {
 
 // solution
 function whitespace(code, input) {
-  if ( ! code ) throw "Invalid input";
+  if ( ! code ) throw "No code to execute";
   
   code = Array.from(code).filter(c => c === " " || c === "\t" || c === "\n").join('');
   var output = [], stack = [], heap = {};
@@ -27,8 +27,8 @@ function whitespace(code, input) {
   };
     
   var getInputNumber = function() {
-    var tmp = input.split("\n");
-    input = tmp.slice(1).join("\n");
+    var tmp = input.split(" ");
+    input = tmp.slice(1).join(" ");
     if ( tmp[0].length === 0 ) throw "Empty input";
     return parseInt(tmp[0]);
   };
@@ -47,11 +47,11 @@ function whitespace(code, input) {
   };
   
   var findLabel = function(label) {
-    if ( labels[label] ) throw "Repeated label";
+    if ( labels[label] ) throw `Repeated label ${unbleach(label)}`;
     var fullLabel = "\n  " + label;
     var labelPos = code.indexOf(fullLabel, i);
     if ( labelPos < 0 ) labelPos = code.indexOf(fullLabel);
-    if ( labelPos < 0 ) throw "Label not found" + JSON.stringify(fullLabel);
+    if ( labelPos < 0 ) throw `Label not found ${unbleach(label)}`;
     labels[label] = labelPos + fullLabel.length;
   };
   
@@ -59,7 +59,7 @@ function whitespace(code, input) {
     var imp = getNext();
     
     // No more instructions to read
-    if ( imp === "" ) throw "Program exit not found";
+    if ( imp === "" ) throw "Program exited before end command";
     
     // Stack manipulation
     else if ( imp === " " ) {
@@ -85,19 +85,19 @@ function whitespace(code, input) {
         var instr2 = getNext();
         if ( instr2 === " " ) { // Duplicate the top values of the stack
           var v = stack.pop();
-          if ( v === undefined ) throw "Empty stack";
+          if ( v === undefined ) throw "Attempted to duplicate empty stack";
           stack.push(v);
           stack.push(v);
         }
         else if ( instr2 === "\t" ) { // Swap the top two values on the stack
           var v1 = stack.pop(), v2 = stack.pop();
-          if ( v1 === undefined || v2 === undefined ) throw "Empty stack";
+          if ( v1 === undefined || v2 === undefined ) throw "Attempted to swap stack with zero or one elements";
           stack.push(v1);
           stack.push(v2);
         }
         else if ( instr2 === "\n" ) { // Discard the top value on the stack
           var v = stack.pop();
-          if ( v === undefined ) throw "Empty stack";
+          if ( v === undefined ) throw "Attempted to pop empty stack";
         }
       }
     }
@@ -108,7 +108,7 @@ function whitespace(code, input) {
       // Mark a location in the program with label n
       if ( instr1 === " " && instr2 === " " ) {
         var n = getLabel();
-        if ( labels[n] ) throw "Repeated label";
+        if ( labels[n] ) throw `Repeated label ${unbleach(n)}`;
         labels[n] = i;
       }
       // Call a subroutine with the location specified by label n
