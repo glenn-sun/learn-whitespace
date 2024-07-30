@@ -150,7 +150,7 @@ worker.onmessage = function (e) {
             throw "unreachable";
         }
     } else if (e.data.mode === 'submit') {
-        if (typeof e.data.error !== undefined) {
+        if (typeof e.data.error === undefined) {
             run_button.classList.remove('inactive-button');
             submit_button.classList.remove('inactive-button');
         
