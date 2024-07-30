@@ -9,7 +9,7 @@ const COMMANDS = {
         instruction: " \n ",
         type: "stack",
         meaning: "Duplicate the top item on the stack",
-        first_appearance: 5,
+        first_appearance: 8,
     },
     dupn: {
         instruction: " \t []",
@@ -95,13 +95,13 @@ const COMMANDS = {
     jmp0: {
         instruction: "\n\t []",
         type: "flow",
-        meaning: "Pop the stack and jump to the label [] if that item is zero",
+        meaning: "Pop the stack, then jump to the label [] if the popped item is zero",
         first_appearance: 6,
     },
     jmpneg: {
         instruction: "\n\t\t[]",
         type: "flow",
-        meaning: "Pop the stack and jump to the label [] if that item is negative",
+        meaning: "Pop the stack, then jump to the label [] if the popped item is negative",
         first_appearance: 10,
     },
     call: {
