@@ -9,7 +9,7 @@ function whitespace(code, input) {
   
   code = Array.from(code).filter(c => c === " " || c === "\t" || c === "\n").join('');
   var output = [], stack = [], heap = {};
-  var i = 0, labels = {}, lastPos = -1, instructions = code.split("");  
+  var i = 0, labels = {}, lastPos = -1, instructions = code.split(""), callStack = [];  
   var getNext = function() {
     var next = "";
     while ( next !== " " && next !== "\n" && next != "\t" && i < instructions.length ) {
@@ -29,12 +29,12 @@ function whitespace(code, input) {
   var getInputNumber = function() {
     var tmp = input.split(" ");
     input = tmp.slice(1).join(" ");
-    if ( tmp[0].length === 0 ) throw "Empty input";
+    if ( tmp[0].length === 0 ) throw "Not enough input";
     return parseInt(tmp[0]);
   };
   
   var getInputChar = function() {
-    if ( input.length === 0 ) throw "Empty input";
+    if ( input.length === 0 ) throw "Not enough input";
     var c = input.charAt(0);
     input = input.slice(1);
     return c;
@@ -71,12 +71,13 @@ function whitespace(code, input) {
         var instr2 = getNext();
         if ( instr2 === " " ) { // Duplicate the nth value from the top of the stack
           var n = getNumber(), v = stack[stack.length-n-1];
-          if ( v === undefined ) throw "Invalid stack access";
+          if ( v === undefined ) throw "Attempted to duplicate nonexistent item on stack";
           stack.push(v);
         }
         else if ( instr2 === "\n") { // Discard the top n values below the top of the stack from the stack
                                      // For n < 0 or n >= stack.length, remove everything but the top value
           var n = getNumber(), top = stack.slice(-1);
+          if ( top === undefined ) throw "Attempted to discard from empty stack";
           if ( n < 0 || n >= stack.length ) stack = top;
           else                              stack = stack.slice(0, stack.length-n-1).concat(top);
         }
@@ -97,7 +98,7 @@ function whitespace(code, input) {
         }
         else if ( instr2 === "\n" ) { // Discard the top value on the stack
           var v = stack.pop();
-          if ( v === undefined ) throw "Attempted to pop empty stack";
+          if ( v === undefined ) throw "Attempted to discard from empty stack";
         }
       }
     }
@@ -115,41 +116,41 @@ function whitespace(code, input) {
       else if ( instr1 === " " && instr2 === "\t" ) {
         var n = getLabel();
         if ( labels[n] === undefined ) findLabel(n);
-        if ( labels[n] === undefined ) throw "Invalid label";
-        lastPos = i;
+        if ( labels[n] === undefined ) throw `Label ${unbleach(n)} not found`;
+        callStack.push(i);
         i = labels[n];
       }
       // Jump unconditionally to the position specified by label n
       else if ( instr1 === " " && instr2 === "\n" ) {
         var n = getLabel();
         if ( labels[n] === undefined ) findLabel(n);
-        if ( labels[n] === undefined ) throw "Invalid label";
+        if ( labels[n] === undefined ) throw `Label ${unbleach(n)} not found`;
         i = labels[n];
       }
       // Pop a value off the stack and jump to the label specified by n if the value is zero
       else if ( instr1 === "\t" && instr2 === " " ) {
         var a = stack.pop(), n = getLabel();
-        if ( a === undefined ) throw "Empty stack";
+        if ( a === undefined ) throw "Attempted jump if zero with empty stack";
         if ( a === 0 ) {
           if ( labels[n] === undefined ) findLabel(n);
-          if ( labels[n] === undefined ) throw "Invalid label";
+          if ( labels[n] === undefined ) throw `Label ${unbleach(n)} not found`;
           i = labels[n];
         }
       }
       // Pop a value off the stack and jump to the label specified by n if the value is less than zero
       else if ( instr1 === "\t" && instr2 === "\t" ) {
         var a = stack.pop(), n = getLabel();
-        if ( a === undefined ) throw "Empty stack";
+        if ( a === undefined ) throw "Attempted jump if negative with empty stack";
         if ( a < 0 ) {
           if ( labels[n] === undefined ) findLabel(n);
-          if ( labels[n] === undefined ) throw "Invalid label";
+          if ( labels[n] === undefined ) throw `Label ${unbleach(n)} not found`;
           i = labels[n];
         }
       }
       // Exit a subroutine and return control to the location from which the subroutine was called
       else if ( instr1 === "\t" && instr2 === "\n" ) {
-        i = lastPos;
-        lastPos = -1;
+        i = callStack.pop();
+        if (i === undefined) throw "Return from empty call stack";
       }
       // Exit the program
       else if ( instr1 === "\n" && instr2 === "\n" ) {
@@ -164,18 +165,18 @@ function whitespace(code, input) {
       // Arithmetic
       if ( imp === "\t" && imp2 === " " ) {
         var a = stack.pop(), b = stack.pop();
-        if ( a === undefined || b === undefined ) throw "Empty stack";
+        if ( a === undefined || b === undefined ) throw "Attempted arithmetic with zero or one elements on stack";
         var instr1 = getNext(), instr2 = getNext()
         console.log(a, b);
         if      ( instr1 === " "  && instr2 === " "  ) stack.push(a+b);
         else if ( instr1 === " "  && instr2 === "\t" ) stack.push(b-a);
         else if ( instr1 === " "  && instr2 === "\n" ) stack.push(a*b);
         else if ( instr1 === "\t" && instr2 === " "  ) {
-          if ( a === 0 ) throw "Division by zero";
+          if ( a === 0 ) throw "Division by zero error";
           stack.push(Math.floor(b/a));
         }
         else if ( instr1 === "\t" && instr2 === "\t" ) {
-          if ( a === 0 ) throw "Modulo by zero";
+          if ( a === 0 ) throw "Modulo by zero error";
           var res = b - a * Math.floor(b / a); // See definition of the floored division
           stack.push((a < 0 ? -1 : 1) * Math.abs(res));
         }
@@ -186,14 +187,14 @@ function whitespace(code, input) {
         var instr = getNext();
         if ( instr === " " ) { // Pop a and b, then store a at heap address b
           var a = stack.pop(), b = stack.pop();
-          if ( a === undefined || b === undefined ) throw "Empty stack";
+          if ( a === undefined || b === undefined ) throw "Attempted heap store with zero or one elements on stack";
           heap[b] = a;
         }
         else if ( instr === "\t" ) { // Pop a and then push the value at heap address a
           var a = stack.pop();
-          if ( a === undefined ) throw "Empty stack";
+          if ( a === undefined ) throw "Attempted heap get with empty stack";
           var v = heap[a];
-          if ( v === undefined ) throw "Invalid address";
+          if ( v === undefined ) throw `Heap location ${unbleach(a)} not set`;
           stack.push(v);
         }
       }
@@ -204,29 +205,29 @@ function whitespace(code, input) {
         // Pop a value off the stack and output it as a character
         if ( instr1 === " " && instr2 === " " ) {
           var v = stack.pop();
-          if ( v === undefined ) throw "Empty stack";
+          if ( v === undefined ) throw "Attempted print with empty stack";
           output.push(String.fromCharCode(v));
         }
         // Pop a value off the stack and output it as a number
         else if ( instr1 === " " && instr2 === "\t" ) {
           var v = stack.pop();
-          if ( v === undefined ) throw "Empty stack";
+          if ( v === undefined ) throw "Attempted print with empty stack";
           output.push(v);
         }
         else if ( instr1 === "\t" && instr2 === " " ) {
           var v = getInputChar(), b = stack.pop();
-          if ( b === undefined ) throw "Empty stack";
+          if ( b === undefined ) throw "Attempted input with empty stack";
           heap[b] = v.charCodeAt(0);
         }
         else if ( instr1 === "\t" && instr2 === "\t" ) {
           var a = getInputNumber(), b = stack.pop();
-          if ( b === undefined ) throw "Empty stack";
+          if ( b === undefined ) throw "Attempted input with empty stack";
           heap[b] = a;
         }
       }
     }
   }
-  
+
   return output.join("");
 };
 

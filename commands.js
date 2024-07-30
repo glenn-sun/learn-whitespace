@@ -5,13 +5,13 @@ const COMMANDS = {
         meaning: "Place [] on the stack",
         first_appearance: 1,
     },
-    dupl: {
+    dup: {
         instruction: " \n ",
         type: "stack",
         meaning: "Duplicate the top item on the stack",
         first_appearance: 5,
     },
-    dupln: {
+    dupn: {
         instruction: " \t []",
         type: "stack",
         meaning: "Duplicate the []'th item on the stack (top is 0th), placing the new copy on top",
@@ -23,13 +23,13 @@ const COMMANDS = {
         meaning: "Swap the top two items on the stack",
         first_appearance: 9,
     },
-    disc: {
+    pop: {
         instruction: " \n\n",
         type: "stack",
         meaning: "Pop and discard the top item on the stack",
         first_appearance: 9,
     },
-    discn: {
+    slide: {
         instruction: " \t\n[]",
         type: "stack",
         meaning: "Pop and discard the top []+1 items on the stack, then put the original top item back on",
@@ -67,7 +67,7 @@ const COMMANDS = {
         first_appearance: 7,
     },
 
-    set: {
+    store: {
         instruction: "\t\t ",
         type: "heap",
         meaning: "Pop the stack twice and place the top item at the heap location given by the second item",
@@ -104,7 +104,7 @@ const COMMANDS = {
         meaning: "Pop the stack and jump to the label [] if that item is negative",
         first_appearance: 10,
     },
-    func: {
+    call: {
         instruction: "\n \t[]",
         type: "flow",
         meaning: "Jump to the label [] as a subroutine",
@@ -135,13 +135,13 @@ const COMMANDS = {
         meaning: "Pop the stack and output it as a number",
         first_appearance: 1,
     },
-    readc: {
+    inputc: {
         instruction: "\t\n\t ",
         type: "io",
         meaning: "Pop the stack and store an input character at that heap location",
         first_appearance: 3,
     },
-    readn: {
+    inputn: {
         instruction: "\t\n\t\t",
         type: "io",
         meaning: "Pop the stack and store an input number at that heap location",
