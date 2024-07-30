@@ -242,7 +242,7 @@ const LEVELS = [
         tests: [
             {
                 input: "12",
-                output: "12109876543210",
+                output: "1211109876543210",
             },
             {
                 input: "2",
