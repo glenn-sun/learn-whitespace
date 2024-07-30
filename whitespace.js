@@ -109,7 +109,7 @@ function whitespace(code, input) {
       // Mark a location in the program with label n
       if ( instr1 === " " && instr2 === " " ) {
         var n = getLabel();
-        if ( labels[n] ) throw `Repeated label ${unbleach(n)}`;
+        if ( labels[n] && labels[n] !== i) { throw `Repeated label ${unbleach(n)}`;}
         labels[n] = i;
       }
       // Call a subroutine with the location specified by label n
@@ -167,7 +167,6 @@ function whitespace(code, input) {
         var a = stack.pop(), b = stack.pop();
         if ( a === undefined || b === undefined ) throw "Attempted arithmetic with zero or one elements on stack";
         var instr1 = getNext(), instr2 = getNext()
-        console.log(a, b);
         if      ( instr1 === " "  && instr2 === " "  ) stack.push(a+b);
         else if ( instr1 === " "  && instr2 === "\t" ) stack.push(b-a);
         else if ( instr1 === " "  && instr2 === "\n" ) stack.push(a*b);

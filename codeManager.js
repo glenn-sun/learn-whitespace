@@ -142,15 +142,15 @@ worker.onmessage = function (e) {
         submit_button.classList.remove('inactive-button');
     
         stop_button.classList.add('inactive-button');
-        if (typeof e.data.output !== undefined) {
+        if (!(e.data.output === undefined)) {
             output_area.innerHTML = e.data.output;
-        } else if (typeof e.data.error !== undefined) {
+        } else if (!(e.data.error === undefined)) {
             output_area.innerHTML = `<span class="error-msg">${e.data.error}</span>`;
         } else {
             throw "unreachable";
         }
     } else if (e.data.mode === 'submit') {
-        if (typeof e.data.error === undefined) {
+        if (!(e.data.error === undefined)) {
             run_button.classList.remove('inactive-button');
             submit_button.classList.remove('inactive-button');
         
