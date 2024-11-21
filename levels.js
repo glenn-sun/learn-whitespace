@@ -3,6 +3,10 @@ const LEVELS = [
     {
         title: "Getting started",
         text: _ => `
+            <p>Welcome to Whitespace!</p>
+            
+            <p>Whitespace is an esoteric programming language that only uses <span class='tab'>&nbsp;tab&nbsp;</span>, <span class='space'>&nbsp;space&nbsp;</span>, and <span class='lf'>&nbsp;new&nbsp;line&nbsp;</span> as meaningful characters. <b>All other characters are ignored and may be used for comments,</b> and the commands pane will automatically insert some helpful comments, though you are welcome (and encouraged) to add more. If you have trouble differentiating the colors on this page, feel free to pick your own in the upper-right corner.</p>
+
             <p>Using the tools you have, figure out a way to output an exclamation point.</p>
             
             <p>By the way, "pop" means to remove the top item. Click "Run" to test your code at any time, and "Submit" when you're confident in your solution.</p>
